@@ -103,8 +103,12 @@ public class Faux {
                 continue;
             }
             for (String relation: relationMap.relations.keySet()) {
+                ArrayList<String> mods = relationMap.relations.get(relation);
+                if (mods.isEmpty()) {
+                    continue;
+                }
                 JsonObject objectForRelation = new JsonObject();
-                for (String mod: relationMap.relations.get(relation)) {
+                for (String mod: mods) {
                     objectForRelation.add(mod, new JsonPrimitive("IGNORED"));
                     dependenciesRavaged ++;
                 }
