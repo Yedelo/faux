@@ -13,6 +13,12 @@ class CommonProperty<T> {
 val javaVersion by CommonProperty<JavaVersion>()
 val finalFileName by CommonProperty<String>()
 
+repositories {
+	mavenCentral()
+	gradlePluginPortal()
+	google()
+}
+
 tasks {
 	processResources {
 		fun MutableMap<String, String>.register(key: String, value: String) {
@@ -32,7 +38,13 @@ tasks {
 	}
 	jar {
 		archiveFileName.set(finalFileName)
+		manifest.attributes(
+			mapOf(
+				"Premain-Class" to "at.yedel.faux.launch.FauxAgent"
+			)
+		)
 	}
+
 }
 
 java {
