@@ -4,6 +4,8 @@ package at.yedel.faux;
 
 import at.yedel.faux.utils.Logger;
 
+import java.io.File;
+
 
 
 public class Faux {
@@ -22,6 +24,9 @@ public class Faux {
         initialized = true;
         long startTime = System.currentTimeMillis();
         Logger.info("Starting Faux");
+        String workDirString = System.getProperty("user.dir");
+        File workDir = new File(workDirString);
+        Logger.info("Work directory is " + workDir);
         Logger.info("Faux initialization took " + (System.currentTimeMillis() - startTime) + "ms");
     }
 }
