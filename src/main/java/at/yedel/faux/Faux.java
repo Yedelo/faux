@@ -110,7 +110,7 @@ public class Faux {
             overrides.add(relationMap.id, objectForMod);
             modsRavaged ++;
         }
-        Logger.info(new GsonBuilder().setPrettyPrinting().create().toJson(overrides));
+        Logger.info(new GsonBuilder().setPrettyPrinting().create().toJson(object));
     }
 
     private JsonObject getFmjFromModFile(File modFile) {
