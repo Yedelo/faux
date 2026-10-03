@@ -1,0 +1,33 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "${license}"
+issueTrackerURL = "https://github.com/Yedelo/${modName}/issues"
+
+[[mods]]
+modId = "${modId}"
+version = "${version}"
+displayName = "${modName}"
+description = "${modDescription}"
+logoFile = "${modIcon}"
+logoBlur = false
+credits = "thebaum64 for original sword texture in icon"
+authors = "Yedel"
+displayURL = "https://modrinth.com/mod/${modId}/"
+
+[[mixins]]
+config = "${modId}.mixins.json5"
+
+[features.${modId}]
+javaVersion = "${java}"
+
+[[dependencies.${modId}]]
+modId = "neoforge"
+versionRange = "${neoforge}"
+
+[[dependencies.${modId}]]
+modId = "minecraft"
+versionRange = "${minecraft}"
+
+[[dependencies.${modId}]]
+modId = "yet_another_config_lib_v3"
+versionRange = "${yacl}"

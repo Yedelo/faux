@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "id": "${modId}",
+  "version": "${version}",
+  "name": "${modName}",
+  "description": "${modDescription}",
+  "authors": [
+    "Yedel"
+  ],
+  "contributors": [
+    "thebaum64 for original sword texture in icon"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/${modId}",
+    "issues": "https://github.com/Yedelo/${modName}/issues",
+    "sources": "https://github.com/Yedelo/${modName}"
+  },
+  "license": "${license}",
+  "icon": "${modIcon}",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "at.yedel.${modId}.${modName}"
+    ],
+    "modmenu": [
+      "at.yedel.${modId}.utils.${modName}ModMenu"
+    ]
+  },
+  "mixins": [
+    "${modId}.mixins.json5"
+  ],
+  "accessWidener": "${modId}.classtweaker",
+  "depends": {
+    "java": "${java}",
+    "fabricloader": "${fabricLoader}",
+    "minecraft": "${minecraft}",
+    "fabric-api": "*",
+    "yet_another_config_lib_v3": "${yacl}"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.github_releases": "https://github.com/Yedelo/${modName}/releases/",
+        "modmenu.modrinth": "https://modrinth.com/mod/${modId}"
+      }
+    }
+  }
+}

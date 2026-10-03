@@ -1,0 +1,5 @@
+{
+  "net/minecraft/client/renderer/entity/state/EntityRenderState": [
+    "at/yedel/advantimations/utils/IdentifiableState"
+  ]
+}
