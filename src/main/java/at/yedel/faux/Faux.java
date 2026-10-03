@@ -3,6 +3,7 @@ package at.yedel.faux;
 
 
 import at.yedel.faux.utils.Logger;
+import at.yedel.faux.utils.RelationMap;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -22,7 +23,7 @@ public class Faux {
         return INSTANCE;
     }
 
-    private static final String[] RELATIONSHIP_KEYS = new String[] {"depends", "recommends", "suggests", "breaks", "conflicts"};
+    private static final String[] RELATION_KEYS = new String[] {"depends", "recommends", "suggests", "breaks", "conflicts"};
     private boolean initialized;
     private File workDir = new File(System.getProperty("user.dir"));
 
@@ -41,15 +42,19 @@ public class Faux {
                 continue;
             }
             JsonObject fmj = getFmjFromModFile(modFile);
-            for (String relationshipKey: RELATIONSHIP_KEYS) {
-                JsonObject relationships = fmj.getAsJsonObject(relationshipKey);
+            String id = fmj.get("id").getAsString();
+            RelationMap relationMap = new RelationMap(id);
+            for (String relationKey: RELATION_KEYS) {
+                relationMap.addRelationKey(relationKey);
+                JsonObject relationships = fmj.getAsJsonObject(relationKey);
                 if (relationships == null) {
                     continue;
                 }
                 for (String mod: relationships.asMap().keySet()) {
-                    Logger.info("Mod " + modFile + " " + relationshipKey + " " +  mod);
+                    relationMap.addRelationMod(relationKey, mod);
                 }
             }
+            Logger.info("Relation map: " + relationMap);
         }
         if (Boolean.getBoolean("faux.exit-after-run")) {
             Logger.info("Property faux.exit-after-run is true, exiting...");
