@@ -97,7 +97,11 @@ public class Faux {
         object.add("faux-write-time", new JsonPrimitive(System.currentTimeMillis()));
         JsonObject overrides = object.getAsJsonObject("overrides");
         for (RelationMap relationMap: relationMaps) {
+            String id = relationMap.id;
             JsonObject objectForMod = new JsonObject();
+            if (object.has(id)) {
+                continue;
+            }
             for (String relation: relationMap.relations.keySet()) {
                 JsonObject objectForRelation = new JsonObject();
                 for (String mod: relationMap.relations.get(relation)) {
@@ -107,7 +111,7 @@ public class Faux {
                 objectForMod.add("-" + relation, objectForRelation);
                 relationsRavaged ++;
             }
-            overrides.add(relationMap.id, objectForMod);
+            overrides.add(id, objectForMod);
             modsRavaged ++;
         }
         Logger.info(new GsonBuilder().setPrettyPrinting().create().toJson(object));
