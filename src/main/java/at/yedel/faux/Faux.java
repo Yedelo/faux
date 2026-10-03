@@ -91,7 +91,7 @@ public class Faux {
 
     //@TODO support mods from java argument
     private File[] getModFiles() {
-        File modsDir = new File(workDir, "mods");
+        File modsDir = new File(Constants.workDir, "mods");
         if (!modsDir.exists()) {
             throw new IllegalStateException("No mods folder found");
         }
