@@ -5,13 +5,9 @@ package at.yedel.faux;
 import at.yedel.faux.utils.Constants;
 import at.yedel.faux.utils.Logger;
 import at.yedel.faux.utils.RelationMap;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -37,7 +33,7 @@ public class Faux {
         Logger.info("Starting Faux");
         Logger.info("Work directory is " + Constants.workDir);
         ArrayList<RelationMap> relationMaps = collect();
-        Logger.info(relationMaps);
+        write(relationMaps);
         Logger.info("Faux initialization took " + (System.currentTimeMillis() - startTime) + "ms");
         if (Boolean.getBoolean("faux.exit-after-run")) {
             Logger.info("Property faux.exit-after-run is true, exiting...");
@@ -56,18 +52,65 @@ public class Faux {
             String id = fmj.get("id").getAsString();
             RelationMap relationMap = new RelationMap(id);
             for (String relationKey: RELATION_KEYS) {
-                relationMap.addRelationKey(relationKey);
+                relationMap.relations.put(relationKey, new ArrayList<>());
                 JsonObject relationships = fmj.getAsJsonObject(relationKey);
                 if (relationships == null) {
                     continue;
                 }
                 for (String mod: relationships.asMap().keySet()) {
-                    relationMap.addRelationMod(relationKey, mod);
+                    relationMap.relations.get(relationKey).add(mod);
                 }
             }
             relationMaps.add(relationMap);
         }
         return relationMaps;
+    }
+
+    private void write(ArrayList<RelationMap> relationMaps) {
+        int modsRavaged = 0;
+        int relationsRavaged = 0;
+        int dependenciesRavaged = 0;
+
+        File configDir = new File(Constants.workDir, "config");
+        if (!configDir.exists()) {
+            configDir.mkdir();
+        }
+        File overridesFile = new File(configDir, "fabric_loader_dependencies.json");
+        JsonObject object = null;
+        if (!overridesFile.exists()) {
+            object = new JsonObject();
+        }
+        else {
+            try (FileReader reader = new FileReader(overridesFile)) {
+                object = JsonParser.parseReader(reader).getAsJsonObject();
+            }
+            catch (IOException e) {
+                // like bro
+            }
+        }
+        if (!object.has("version")) {
+            object.add("version", new JsonPrimitive(1));
+        }
+        if (!object.has("overrides")) {
+            object.add("overrides", new JsonObject());
+        }
+        object.add("faux-write-time", new JsonPrimitive(System.currentTimeMillis()));
+        JsonObject overrides = object.getAsJsonObject("overrides");
+        for (RelationMap relationMap: relationMaps) {
+            JsonObject objectForMod = new JsonObject();
+            for (String relation: relationMap.relations.keySet()) {
+                JsonObject objectForRelation = new JsonObject();
+                for (String mod: relationMap.relations.get(relation)) {
+                    objectForRelation.add(mod, new JsonPrimitive("IGNORED"));
+                    dependenciesRavaged ++;
+                }
+                objectForMod.add("-" + relation, objectForRelation);
+                relationsRavaged ++;
+            }
+            overrides.add(relationMap.id, objectForMod);
+            modsRavaged ++;
+        }
+        Logger.info(new GsonBuilder().setPrettyPrinting().create().toJson(overrides));
     }
 
     private JsonObject getFmjFromModFile(File modFile) {
