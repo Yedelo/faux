@@ -2,6 +2,7 @@ package at.yedel.faux;
 
 
 
+import at.yedel.faux.utils.Constants;
 import at.yedel.faux.utils.Logger;
 import at.yedel.faux.utils.RelationMap;
 import com.google.gson.JsonObject;
@@ -11,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -25,7 +27,6 @@ public class Faux {
 
     private static final String[] RELATION_KEYS = new String[] {"depends", "recommends", "suggests", "breaks", "conflicts"};
     private boolean initialized;
-    private File workDir = new File(System.getProperty("user.dir"));
 
     public void initialize() {
         if (initialized) {
@@ -34,8 +35,18 @@ public class Faux {
         initialized = true;
         long startTime = System.currentTimeMillis();
         Logger.info("Starting Faux");
-        Logger.info("Work directory is " + workDir);
+        Logger.info("Work directory is " + Constants.workDir);
+        ArrayList<RelationMap> relationMaps = collect();
+        Logger.info(relationMaps);
         Logger.info("Faux initialization took " + (System.currentTimeMillis() - startTime) + "ms");
+        if (Boolean.getBoolean("faux.exit-after-run")) {
+            Logger.info("Property faux.exit-after-run is true, exiting...");
+            System.exit(0);
+        }
+    }
+
+    private ArrayList<RelationMap> collect() {
+        ArrayList<RelationMap> relationMaps = new ArrayList<>();
         File[] modFiles = getModFiles();
         for (File modFile: modFiles) {
             if (modFile.isDirectory()) {
@@ -54,12 +65,9 @@ public class Faux {
                     relationMap.addRelationMod(relationKey, mod);
                 }
             }
-            Logger.info("Relation map: " + relationMap);
+            relationMaps.add(relationMap);
         }
-        if (Boolean.getBoolean("faux.exit-after-run")) {
-            Logger.info("Property faux.exit-after-run is true, exiting...");
-            System.exit(0);
-        }
+        return relationMaps;
     }
 
     private JsonObject getFmjFromModFile(File modFile) {
