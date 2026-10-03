@@ -28,5 +28,9 @@ public class Faux {
         File workDir = new File(workDirString);
         Logger.info("Work directory is " + workDir);
         Logger.info("Faux initialization took " + (System.currentTimeMillis() - startTime) + "ms");
+        if (Boolean.getBoolean("faux.exit-after-run")) {
+            Logger.info("Property faux.exit-after-run is true, exiting...");
+            System.exit(0);
+        }
     }
 }
