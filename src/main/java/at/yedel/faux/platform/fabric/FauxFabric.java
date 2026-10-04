@@ -33,7 +33,7 @@ public class FauxFabric {
     private static final String[] RELATION_KEYS = new String[] {"depends", "recommends", "suggests", "breaks", "conflicts"};
 
     public void initialize() {
-        Logger.info("Platform: fabric");
+        Logger.info("Platform: Fabric");
         ArrayList<RelationMap> relationMaps = collect();
         write(relationMaps);
     }
