@@ -122,11 +122,11 @@ public class Faux {
         Logger.info("Ravaged " + modsRavaged + " mods, " + dependenciesRavaged + " dependencies.");
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         if (Properties.of("print-json", false)) {
-            Logger.info(gson.toJson(overrides));
+            Logger.info(gson.toJson(object));
         }
         if (Properties.of("write-json", true)) {
             try (BufferedWriter writer = Files.newBufferedWriter(overridesFile.toPath(), StandardCharsets.UTF_8)) {
-                gson.toJson(overrides, writer);
+                gson.toJson(object, writer);
                 System.out.println("JSON file written successfully.");
             }
             catch (IOException e) {
