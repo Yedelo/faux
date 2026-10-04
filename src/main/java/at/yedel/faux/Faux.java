@@ -2,19 +2,10 @@ package at.yedel.faux;
 
 
 
+import at.yedel.faux.platform.fabric.FauxFabric;
 import at.yedel.faux.utils.Constants;
-import at.yedel.faux.utils.ModFiles;
-import at.yedel.faux.utils.Properties;
-import at.yedel.faux.data.RelationMap;
-import com.google.gson.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
 
 
 
@@ -26,8 +17,6 @@ public class Faux {
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger("Faux");
-    private static final String[] RELATION_KEYS = new String[] {"depends", "recommends", "suggests", "breaks", "conflicts"};
-    private static final String CHOICE_OF_WORD = "Muted";
     private boolean initialized;
 
     public void initialize() {
@@ -38,108 +27,12 @@ public class Faux {
         long startTime = System.currentTimeMillis();
         LOGGER.info("Starting Faux");
         LOGGER.info("Work directory is {}", Constants.workDir);
-        ArrayList<RelationMap> relationMaps = collect();
-        write(relationMaps);
+        //? if fabric
+        FauxFabric.getInstance().initialize();
         LOGGER.info("Faux initialization took {} ms", System.currentTimeMillis() - startTime);
         if (Boolean.getBoolean("faux.exit-after-run")) {
             LOGGER.info("Property faux.exit-after-run is true, exiting...");
             System.exit(0);
-        }
-    }
-
-    private ArrayList<RelationMap> collect() {
-        ArrayList<RelationMap> relationMaps = new ArrayList<>();
-        List<File> modFiles = ModFiles.getModFiles();
-        for (File modFile: modFiles) {
-            // stuff like prism's .index
-            if (modFile.isDirectory()) {
-                continue;
-            }
-            JsonObject fmj = ModFiles.getFmjFromModFile(modFile);
-            String id = fmj.get("id").getAsString();
-            RelationMap relationMap = new RelationMap(id);
-            for (String relationKey: RELATION_KEYS) {
-                relationMap.relations.put(relationKey, new ArrayList<>());
-                JsonObject relationships = fmj.getAsJsonObject(relationKey);
-                if (relationships == null) {
-                    continue;
-                }
-                for (String mod: relationships.asMap().keySet()) {
-                    relationMap.relations.get(relationKey).add(mod);
-                }
-            }
-            relationMaps.add(relationMap);
-        }
-        return relationMaps;
-    }
-
-    private void write(ArrayList<RelationMap> relationMaps) {
-        int modsRavaged = 0;
-        int dependenciesRavaged = 0;
-
-        File configDir = new File(Constants.workDir, "config");
-        if (!configDir.exists()) {
-            LOGGER.info("No config directory found, creating new one");
-            configDir.mkdir();
-        }
-        File overridesFile = new File(configDir, "fabric_loader_dependencies.json");
-        JsonObject object = null;
-        if (!overridesFile.exists()) {
-            LOGGER.info("Creating new fabric_loader_dependencies.json");
-            object = new JsonObject();
-        }
-        else {
-            try (FileReader reader = new FileReader(overridesFile)) {
-                object = JsonParser.parseReader(reader).getAsJsonObject();
-            }
-            catch (IOException e) {
-                LOGGER.error("Error reading overrides file!", e);
-            }
-            LOGGER.info("Found fabric_loader_dependencies.json, editing existing one");
-        }
-        if (!object.has("version")) {
-            object.add("version", new JsonPrimitive(1));
-        }
-        if (!object.has("overrides")) {
-            object.add("overrides", new JsonObject());
-        }
-        JsonObject overrides = object.getAsJsonObject("overrides");
-        for (RelationMap relationMap: relationMaps) {
-            String id = relationMap.id;
-            JsonObject objectForMod = new JsonObject();
-            if (object.has(id)) {
-                continue;
-            }
-            for (String relation: relationMap.relations.keySet()) {
-                ArrayList<String> mods = relationMap.relations.get(relation);
-                if (mods.isEmpty()) {
-                    continue;
-                }
-                JsonObject objectForRelation = new JsonObject();
-                for (String mod: mods) {
-                    objectForRelation.add(mod, new JsonPrimitive("IGNORED"));
-                    dependenciesRavaged ++;
-                }
-                objectForMod.add("-" + relation, objectForRelation);
-            }
-            overrides.add(id, objectForMod);
-            modsRavaged ++;
-        }
-        LOGGER.info("{} {} mods and {} dependencies", CHOICE_OF_WORD, modsRavaged, dependenciesRavaged);
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        if (Properties.of("print-json", false)) {
-            LOGGER.info(gson.toJson(object));
-        }
-        if (Properties.of("write-json", true)) {
-            try (BufferedWriter writer = Files.newBufferedWriter(overridesFile.toPath(), StandardCharsets.UTF_8)) {
-                gson.toJson(object, writer);
-            }
-            catch (IOException e) {
-                LOGGER.error("Encountered error while writing overrides!", e);
-            }
-        }
-        else {
-            LOGGER.warn("Property faux.write-json is false, not writing overrides!");
         }
     }
 }
