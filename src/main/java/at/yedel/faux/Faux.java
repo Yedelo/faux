@@ -90,7 +90,7 @@ public class Faux {
                 object = JsonParser.parseReader(reader).getAsJsonObject();
             }
             catch (IOException e) {
-                // like bro
+                LOGGER.error("Error reading overrides file!", e);
             }
         }
         if (!object.has("version")) {
@@ -131,12 +131,11 @@ public class Faux {
                 gson.toJson(object, writer);
             }
             catch (IOException e) {
-                LOGGER.info("Encountered error while writing overrides!");
-                e.printStackTrace();
+                LOGGER.error("Encountered error while writing overrides!", e);
             }
         }
         else {
-            LOGGER.info("Property faux.write-json is false, not writing overrides!");
+            LOGGER.warn("Property faux.write-json is false, not writing overrides!");
         }
     }
 }
