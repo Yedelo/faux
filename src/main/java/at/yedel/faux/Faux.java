@@ -12,6 +12,8 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -46,7 +48,7 @@ public class Faux {
 
     private ArrayList<RelationMap> collect() {
         ArrayList<RelationMap> relationMaps = new ArrayList<>();
-        File[] modFiles = getModFiles();
+        List<File> modFiles = getModFiles();
         for (File modFile: modFiles) {
             if (modFile.isDirectory()) {
                 continue;
@@ -158,7 +160,7 @@ public class Faux {
     }
 
     //@TODO support mods from java argument -Dfabric.addMods
-    private File[] getModFiles() {
+    private List<File> getModFiles() {
         String customModsFolder = System.getProperty("fabric.modsFolder");
         File modsDir = null;
         if (customModsFolder != null) {
@@ -170,6 +172,6 @@ public class Faux {
         if (!modsDir.exists()) {
             modsDir.mkdir();
         }
-        return modsDir.listFiles();
+        return Arrays.asList(modsDir.listFiles());
     }
 }
