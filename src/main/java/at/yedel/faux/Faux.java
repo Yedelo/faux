@@ -181,7 +181,6 @@ public class Faux {
                     String additionalMods = Files.readString(additionalModsFile);
                     String[] additionalModLines = additionalMods.split("\n");
                     for (String additionalModLine: additionalModLines) {
-                        Logger.info("Attempting creation of file " + additionalModLine);
                         modFiles.add(new File(additionalModLine));
                     }
                 }
