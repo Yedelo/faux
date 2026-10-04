@@ -6,5 +6,5 @@
 
 ![github release version](https://img.shields.io/github/v/release/Yedelo/faux?include_prereleases&label=github)
 
-![modrinth latest version](https://img.shields.io/modrinth/v/@@TODO?label=modrinth)
+![modrinth latest version](https://img.shields.io/modrinth/v/lDJcSaOT?label=modrinth)
 
