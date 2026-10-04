@@ -19,6 +19,10 @@ This does not create any compatibility with any mods beyond removing the initial
 - Testing mods on different Minecraft versions (e.g. 26.2 -> 26.3)
 - Removing hostile `breaks` relations (e.g. SkyHanni breaking mod hiders)
 
+## Unsupported
+
+- Dependencies from Jar-in-Jar
+
 ## Dependencies
 
 Ironic...  
