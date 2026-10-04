@@ -1,15 +1,16 @@
-package at.yedel.faux.platform.neoforge;
+//? if neoforge {
+/*package at.yedel.faux.platform.neoforge;
 
 
 
 import at.yedel.faux.utils.Constants;
 import at.yedel.faux.utils.FileUtils;
+import at.yedel.faux.utils.Logger;
 import at.yedel.faux.utils.Properties;
 import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.toml.TomlFormat;
 import com.electronwill.nightconfig.toml.TomlWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -27,8 +28,6 @@ public class FauxNeoforge {
         return INSTANCE;
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("FauxNeoforge");
-
     public void initialize() {
         Map<String, List<String>> relationMap = collect();
         write(relationMap);
@@ -44,7 +43,7 @@ public class FauxNeoforge {
             }
             Config nmt = getNmtFromModFile(modFile);
             if (nmt == null) {
-                LOGGER.warn("File {} has no neoforge.mods.toml, skipping!", modFile);
+                Logger.warn("File {} has no neoforge.mods.toml, skipping!", modFile);
                 continue;
             }
             List<Config> mods = nmt.get("mods");
@@ -69,7 +68,7 @@ public class FauxNeoforge {
         File configFile = new File(configDir, "fml.toml");
         Config config = null;
         if (!configFile.exists()) {
-            LOGGER.info("Creating new fml.toml");
+            Logger.info("Creating new fml.toml");
             config = TomlFormat.newConfig();
         }
         else {
@@ -77,9 +76,9 @@ public class FauxNeoforge {
                 config = TomlFormat.instance().createParser().parse(reader);
             }
             catch (IOException e) {
-                LOGGER.error("Error reading config file!", e);
+                Logger.error("Error reading config file!", e);
             }
-            LOGGER.info("Found fml.toml, editing existing one");
+            Logger.info("Found fml.toml, editing existing one");
         }
         if (!config.contains("dependencyOverrides")) {
             config.set("dependencyOverrides", TomlFormat.newConfig());
@@ -92,21 +91,22 @@ public class FauxNeoforge {
             dependenciesRavaged += ids.size();
         }
 
-        LOGGER.info("{} {} mods and {} dependencies", Constants.CHOICE_OF_WORD, modsRavaged, dependenciesRavaged);
+        Logger.info("{} {} mods and {} dependencies", Constants.CHOICE_OF_WORD, modsRavaged, dependenciesRavaged);
         TomlWriter tomlWriter = new TomlWriter();
         if (Properties.of("print-file", false)) {
-            LOGGER.info(tomlWriter.writeToString(dependencyOverrides));
+            Config finalDependencyOverrides = dependencyOverrides;
+            Logger.withoutFormatting(() -> Logger.info(false, tomlWriter.writeToString(finalDependencyOverrides)));
         }
         if (Properties.of("write-file", true)) {
             try (BufferedWriter writer = Files.newBufferedWriter(configFile.toPath(), StandardCharsets.UTF_8)) {
                 tomlWriter.write(config, writer);
             }
             catch (IOException e) {
-                LOGGER.error("Encountered error while writing overrides!", e);
+                Logger.error("Encountered error while writing overrides!", e);
             }
         }
         else {
-            LOGGER.warn("Property faux.write-file is false, not writing overrides!");
+            Logger.warn("Property faux.write-file is false, not writing overrides!");
         }
     }
 
@@ -139,3 +139,4 @@ public class FauxNeoforge {
         return modFiles;
     }
 }
+*///?}

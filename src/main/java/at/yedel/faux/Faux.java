@@ -8,8 +8,7 @@ import at.yedel.faux.platform.fabric.FauxFabric;
 //import at.yedel.faux.platform.neoforge.FauxNeoforge;
 //?}
 import at.yedel.faux.utils.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import at.yedel.faux.utils.Logger;
 
 
 
@@ -20,7 +19,6 @@ public class Faux {
         return INSTANCE;
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("Faux");
     private boolean initialized;
 
     public void initialize() {
@@ -29,16 +27,16 @@ public class Faux {
         }
         initialized = true;
         long startTime = System.currentTimeMillis();
-        LOGGER.info("Starting Faux");
-        LOGGER.info("Work directory is {}", Constants.workDir);
+        Logger.info("Starting Faux");
+        Logger.info("Work directory is {}", Constants.workDir);
         //? if fabric{
         FauxFabric.getInstance().initialize();
         //?} else if neoforge {
         //FauxNeoforge.getInstance().initialize();
         //?}
-        LOGGER.info("Faux initialization took {} ms", System.currentTimeMillis() - startTime);
+        Logger.info("Faux initialization took {} ms", System.currentTimeMillis() - startTime);
         if (Boolean.getBoolean("faux.exit-after-run")) {
-            LOGGER.info("Property faux.exit-after-run is true, exiting...");
+            Logger.info("Property faux.exit-after-run is true, exiting...");
             System.exit(0);
         }
     }

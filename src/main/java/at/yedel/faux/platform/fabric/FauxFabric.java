@@ -6,10 +6,10 @@ package at.yedel.faux.platform.fabric;
 import at.yedel.faux.data.RelationMap;
 import at.yedel.faux.utils.Constants;
 import at.yedel.faux.utils.FileUtils;
+import at.yedel.faux.utils.Logger;
 import at.yedel.faux.utils.Properties;
 import com.google.gson.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -30,7 +30,6 @@ public class FauxFabric {
         return INSTANCE;
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("FauxFabric");
     private static final String[] RELATION_KEYS = new String[] {"depends", "recommends", "suggests", "breaks", "conflicts"};
 
     public void initialize() {
@@ -72,7 +71,7 @@ public class FauxFabric {
         File overridesFile = new File(configDir, "fabric_loader_dependencies.json");
         JsonObject object = null;
         if (!overridesFile.exists()) {
-            LOGGER.info("Creating new fabric_loader_dependencies.json");
+            Logger.info("Creating new fabric_loader_dependencies.json");
             object = new JsonObject();
         }
         else {
@@ -80,9 +79,9 @@ public class FauxFabric {
                 object = JsonParser.parseReader(reader).getAsJsonObject();
             }
             catch (IOException e) {
-                LOGGER.error("Error reading overrides file!", e);
+                Logger.error("Error reading overrides file!", e);
             }
-            LOGGER.info("Found fabric_loader_dependencies.json, editing existing one");
+            Logger.info("Found fabric_loader_dependencies.json, editing existing one");
         }
         if (!object.has("version")) {
             object.add("version", new JsonPrimitive(1));
@@ -112,21 +111,22 @@ public class FauxFabric {
             overrides.add(id, objectForMod);
             modsRavaged ++;
         }
-        LOGGER.info("{} {} mods and {} dependencies", Constants.CHOICE_OF_WORD, modsRavaged, dependenciesRavaged);
+        Logger.info("{} {} mods and {} dependencies", Constants.CHOICE_OF_WORD, modsRavaged, dependenciesRavaged);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         if (Properties.of("print-file", false)) {
-            LOGGER.info(gson.toJson(object));
+            JsonObject finalObject = object;
+            Logger.withoutFormatting(() -> Logger.info(gson.toJson(finalObject)));
         }
         if (Properties.of("write-file", true)) {
             try (BufferedWriter writer = Files.newBufferedWriter(overridesFile.toPath(), StandardCharsets.UTF_8)) {
                 gson.toJson(object, writer);
             }
             catch (IOException e) {
-                LOGGER.error("Encountered error while writing overrides!", e);
+                Logger.error("Encountered error while writing overrides!", e);
             }
         }
         else {
-            LOGGER.warn("Property faux.write-file is false, not writing overrides!");
+            Logger.warn("Property faux.write-file is false, not writing overrides!");
         }
     }
 
