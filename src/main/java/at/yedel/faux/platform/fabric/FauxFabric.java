@@ -5,6 +5,7 @@ package at.yedel.faux.platform.fabric;
 
 import at.yedel.faux.data.RelationMap;
 import at.yedel.faux.utils.Constants;
+import at.yedel.faux.utils.FileUtils;
 import at.yedel.faux.utils.Properties;
 import com.google.gson.*;
 import org.slf4j.Logger;
@@ -67,11 +68,7 @@ public class FauxFabric {
         int modsRavaged = 0;
         int dependenciesRavaged = 0;
 
-        File configDir = new File(Constants.workDir, "config");
-        if (!configDir.exists()) {
-            LOGGER.info("No config directory found, creating new one");
-            configDir.mkdir();
-        }
+        File configDir = FileUtils.provideConfigDir();
         File overridesFile = new File(configDir, "fabric_loader_dependencies.json");
         JsonObject object = null;
         if (!overridesFile.exists()) {
