@@ -157,11 +157,18 @@ public class Faux {
         }
     }
 
-    //@TODO support mods from java argument
+    //@TODO support mods from java argument -Dfabric.addMods
     private File[] getModFiles() {
-        File modsDir = new File(Constants.workDir, "mods");
+        String customModsFolder = System.getProperty("fabric.modsFolder");
+        File modsDir = null;
+        if (customModsFolder != null) {
+            modsDir = new File(customModsFolder);
+        }
+        else {
+            modsDir = new File(Constants.workDir, "mods");
+        }
         if (!modsDir.exists()) {
-            throw new IllegalStateException("No mods folder found");
+            modsDir.mkdir();
         }
         return modsDir.listFiles();
     }
