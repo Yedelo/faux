@@ -5,7 +5,7 @@ package at.yedel.faux;
 import at.yedel.faux.utils.Constants;
 import at.yedel.faux.utils.Logger;
 import at.yedel.faux.utils.Properties;
-import at.yedel.faux.utils.RelationMap;
+import at.yedel.faux.data.RelationMap;
 import com.google.gson.*;
 
 import java.io.*;
