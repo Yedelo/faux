@@ -22,9 +22,10 @@ This does not create any compatibility with any mods beyond removing the initial
 ## Unsupported
 
 - Dependencies from Jar-in-Jar
+- Bad formatting. If your mod is missing a fabric.mod.json or your custom mods path file points to mystery dust, do not expect error handling from me.
 
 ## Dependencies
 
 Ironic...  
-[Fabric Loader](https://github.com/FabricMC/fabric-loader/) >= 0.11.1
+[Fabric Loader](https://github.com/FabricMC/fabric-loader/) >= 0.11.1 (adds dependency overrides)
 
