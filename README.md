@@ -21,6 +21,6 @@ This does not create any compatibility with any mods beyond removing the initial
 
 ## Dependencies
 
-Ironic...
-![Fabric Loader](https://github.com/FabricMC/fabric-loader/) >= 0.11.1
+Ironic...  
+[Fabric Loader](https://github.com/FabricMC/fabric-loader/) >= 0.11.1
 
