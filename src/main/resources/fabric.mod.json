@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "${modId}",
+  "version": "${version}",
+  "name": "${modName}",
+  "description": "${modDescription}",
+  "authors": [
+    "Yedel"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/${modId}",
+    "issues": "https://github.com/Yedelo/${modName}/issues",
+    "sources": "https://github.com/Yedelo/${modName}"
+  },
+  "license": "${license}",
+  "icon": "${modIcon}",
+  "environment": "*",
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.github_releases": "https://github.com/Yedelo/${modName}/releases/",
+        "modmenu.modrinth": "https://modrinth.com/mod/${modId}"
+      }
+    }
+  }
+}

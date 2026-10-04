@@ -10,6 +10,11 @@ class CommonProperty<T> {
 	operator fun getValue(thisRef: Any?, property: KProperty<*>): T = (rootProject.extra[sc.current.project] as Map<String, Any?>)[property.name] as T
 }
 
+val modName: String by project
+val modId: String by project
+val modDescription: String by project
+val modIcon: String by project
+val license: String by project
 val javaVersion by CommonProperty<JavaVersion>()
 val finalFileName by CommonProperty<String>()
 
@@ -30,6 +35,15 @@ tasks {
 			set(key, value)
 		}
 		fun target(version: String) = ">=$version"
+		val props = buildMap {
+			register("modName", modName)
+			register("modId", modId)
+			register("modDescription", modDescription)
+			register("modIcon", modIcon)
+			register("version", version.toString())
+			register("license", license)
+		}
+		filesMatching(listOf("fabric.mod.json")) { expand(props) }
         outputs.upToDateWhen { false }
 	}
 
