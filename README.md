@@ -8,8 +8,7 @@
 
 ![modrinth latest version](https://img.shields.io/modrinth/v/lDJcSaOT?label=modrinth)
 
-This mod (java agent) mutes Fabric Loader dependencies by scanning the mods folder, looking for dependency relations,  
-and generating an inverse in `config/fabric-loader-dependencies.json`.
+This mod (java agent) mutes Fabric Loader dependencies by scanning the mods folder, looking for dependency relations, and generating an inverse in `config/fabric-loader-dependencies.json`.
 This does not create any compatibility with any mods beyond removing the initial loader crash.
 
 ## Usages
