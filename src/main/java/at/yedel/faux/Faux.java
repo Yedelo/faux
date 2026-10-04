@@ -96,7 +96,6 @@ public class Faux {
         if (!object.has("overrides")) {
             object.add("overrides", new JsonObject());
         }
-        object.add("faux-write-time", new JsonPrimitive(System.currentTimeMillis()));
         JsonObject overrides = object.getAsJsonObject("overrides");
         for (RelationMap relationMap: relationMaps) {
             String id = relationMap.id;
