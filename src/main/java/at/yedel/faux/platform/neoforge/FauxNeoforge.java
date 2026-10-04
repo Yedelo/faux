@@ -29,6 +29,7 @@ public class FauxNeoforge {
     }
 
     public void initialize() {
+        Logger.info("Platform: neoforge");
         Map<String, List<String>> relationMap = collect();
         write(relationMap);
     }
