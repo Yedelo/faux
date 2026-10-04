@@ -7,6 +7,7 @@ import at.yedel.faux.platform.fabric.FauxFabric;
 //?} else if neoforge {
 //import at.yedel.faux.platform.neoforge.FauxNeoforge;
 //?}
+import at.yedel.faux.launch.FauxConstants;
 import at.yedel.faux.utils.Constants;
 import at.yedel.faux.utils.Logger;
 
@@ -27,7 +28,7 @@ public class Faux {
         }
         initialized = true;
         long startTime = System.currentTimeMillis();
-        Logger.info("Starting Faux");
+        Logger.info("Starting Faux {} for {}", FauxConstants.VERSION, FauxConstants.LOADER);
         Logger.info("Work directory is {}", Constants.workDir);
         //? if fabric{
         FauxFabric.getInstance().initialize();

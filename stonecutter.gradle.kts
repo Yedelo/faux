@@ -18,7 +18,8 @@ stonecutter parameters {
     constants {
         match(loader, "fabric", "neoforge")
     }
-
+    swaps["version"] = "\"${version}\";"
+    swaps["loader"] = "\"${loader}\";"
     val shared = mutableMapOf<String, Any?>()
     extra[current.project] = shared
 
