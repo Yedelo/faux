@@ -4,6 +4,7 @@ package at.yedel.faux;
 
 import at.yedel.faux.utils.Constants;
 import at.yedel.faux.utils.Logger;
+import at.yedel.faux.utils.ModFiles;
 import at.yedel.faux.utils.Properties;
 import at.yedel.faux.data.RelationMap;
 import com.google.gson.*;
@@ -49,12 +50,12 @@ public class Faux {
 
     private ArrayList<RelationMap> collect() {
         ArrayList<RelationMap> relationMaps = new ArrayList<>();
-        List<File> modFiles = getModFiles();
+        List<File> modFiles = ModFiles.getModFiles();
         for (File modFile: modFiles) {
             if (modFile.isDirectory()) {
                 continue;
             }
-            JsonObject fmj = getFmjFromModFile(modFile);
+            JsonObject fmj = ModFiles.getFmjFromModFile(modFile);
             String id = fmj.get("id").getAsString();
             RelationMap relationMap = new RelationMap(id);
             for (String relationKey: RELATION_KEYS) {
@@ -139,62 +140,5 @@ public class Faux {
         else {
             Logger.info("Property faux.write-json is false, not writing overrides!");
         }
-    }
-
-    private JsonObject getFmjFromModFile(File modFile) {
-        try (JarFile modJar = new JarFile(modFile)) {
-            JarEntry possibleModInfo = modJar.getJarEntry("fabric.mod.json");
-            if (possibleModInfo == null) {
-                return null;
-            }
-            try (
-                InputStream modStream = modJar.getInputStream(possibleModInfo);
-                InputStreamReader reader = new InputStreamReader(modStream)
-            ) {
-                JsonObject modObject = new JsonParser().parse(reader).getAsJsonObject();
-                return modObject;
-            }
-        }
-        catch (IOException e) {
-            return null;
-        }
-    }
-
-    private List<File> getModFiles() {
-        List<File> modFiles = new ArrayList<>();
-        String customModsFolder = System.getProperty("fabric.modsFolder");
-        File modsDir = null;
-        if (customModsFolder != null) {
-            modsDir = new File(customModsFolder);
-        }
-        else {
-            modsDir = new File(Constants.workDir, "mods");
-        }
-        if (modsDir.exists()) {
-            modFiles.addAll(Arrays.asList(modsDir.listFiles()));
-        }
-        String customMods = System.getProperty("fabric.addMods");
-        if (customMods != null) {
-            if (customMods.startsWith("@")) {
-                Path additionalModsFile = Path.of(customMods.substring(1));
-                try {
-                    String additionalMods = Files.readString(additionalModsFile);
-                    String[] additionalModLines = additionalMods.split("\n");
-                    for (String additionalModLine: additionalModLines) {
-                        modFiles.add(new File(additionalModLine));
-                    }
-                }
-                catch (IOException e) {
-                    // like bro
-                }
-            }
-            else {
-                String[] additionalMods = customMods.split(File.pathSeparator);
-                for (String additionalMod: additionalMods) {
-                    modFiles.add(new File(additionalMod));
-                }
-            }
-        }
-        return modFiles;
     }
 }
