@@ -129,7 +129,6 @@ public class Faux {
         if (Properties.of("write-json", true)) {
             try (BufferedWriter writer = Files.newBufferedWriter(overridesFile.toPath(), StandardCharsets.UTF_8)) {
                 gson.toJson(object, writer);
-                System.out.println("JSON file written successfully.");
             }
             catch (IOException e) {
                 LOGGER.info("Encountered error while writing overrides!");
