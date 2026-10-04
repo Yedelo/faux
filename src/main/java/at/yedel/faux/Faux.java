@@ -121,7 +121,7 @@ public class Faux {
             overrides.add(id, objectForMod);
             modsRavaged ++;
         }
-        LOGGER.info("{} {} mods, {} dependencies.", CHOICE_OF_WORD, modsRavaged, dependenciesRavaged);
+        LOGGER.info("{} {} mods and {} dependencies", CHOICE_OF_WORD, modsRavaged, dependenciesRavaged);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         if (Properties.of("print-json", false)) {
             LOGGER.info(gson.toJson(object));
