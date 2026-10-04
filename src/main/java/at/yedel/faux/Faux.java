@@ -79,11 +79,13 @@ public class Faux {
 
         File configDir = new File(Constants.workDir, "config");
         if (!configDir.exists()) {
+            LOGGER.info("No config directory found, creating new one");
             configDir.mkdir();
         }
         File overridesFile = new File(configDir, "fabric_loader_dependencies.json");
         JsonObject object = null;
         if (!overridesFile.exists()) {
+            LOGGER.info("Creating new fabric_loader_dependencies.json");
             object = new JsonObject();
         }
         else {
@@ -93,6 +95,7 @@ public class Faux {
             catch (IOException e) {
                 LOGGER.error("Error reading overrides file!", e);
             }
+            LOGGER.info("Found fabric_loader_dependencies.json, editing existing one");
         }
         if (!object.has("version")) {
             object.add("version", new JsonPrimitive(1));
