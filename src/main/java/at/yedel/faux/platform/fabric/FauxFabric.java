@@ -116,10 +116,10 @@ public class FauxFabric {
         }
         LOGGER.info("{} {} mods and {} dependencies", Constants.CHOICE_OF_WORD, modsRavaged, dependenciesRavaged);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        if (Properties.of("print-json", false)) {
+        if (Properties.of("print-file", false)) {
             LOGGER.info(gson.toJson(object));
         }
-        if (Properties.of("write-json", true)) {
+        if (Properties.of("write-file", true)) {
             try (BufferedWriter writer = Files.newBufferedWriter(overridesFile.toPath(), StandardCharsets.UTF_8)) {
                 gson.toJson(object, writer);
             }
@@ -128,7 +128,7 @@ public class FauxFabric {
             }
         }
         else {
-            LOGGER.warn("Property faux.write-json is false, not writing overrides!");
+            LOGGER.warn("Property faux.write-file is false, not writing overrides!");
         }
     }
 
