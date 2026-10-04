@@ -3,21 +3,18 @@ package at.yedel.faux;
 
 
 import at.yedel.faux.utils.Constants;
-import at.yedel.faux.utils.Logger;
 import at.yedel.faux.utils.ModFiles;
 import at.yedel.faux.utils.Properties;
 import at.yedel.faux.data.RelationMap;
 import com.google.gson.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 
 
@@ -28,6 +25,7 @@ public class Faux {
         return INSTANCE;
     }
 
+    private static final Logger LOGGER = LoggerFactory.getLogger("Faux");
     private static final String[] RELATION_KEYS = new String[] {"depends", "recommends", "suggests", "breaks", "conflicts"};
     private static final String CHOICE_OF_WORD = "Muted";
     private boolean initialized;
@@ -38,13 +36,13 @@ public class Faux {
         }
         initialized = true;
         long startTime = System.currentTimeMillis();
-        Logger.info("Starting Faux");
-        Logger.info("Work directory is " + Constants.workDir);
+        LOGGER.info("Starting Faux");
+        LOGGER.info("Work directory is {}", Constants.workDir);
         ArrayList<RelationMap> relationMaps = collect();
         write(relationMaps);
-        Logger.info("Faux initialization took " + (System.currentTimeMillis() - startTime) + "ms");
+        LOGGER.info("Faux initialization took {} ms", System.currentTimeMillis() - startTime);
         if (Boolean.getBoolean("faux.exit-after-run")) {
-            Logger.info("Property faux.exit-after-run is true, exiting...");
+            LOGGER.info("Property faux.exit-after-run is true, exiting...");
             System.exit(0);
         }
     }
@@ -123,10 +121,10 @@ public class Faux {
             overrides.add(id, objectForMod);
             modsRavaged ++;
         }
-        Logger.info(CHOICE_OF_WORD + " " + modsRavaged + " mods, " + dependenciesRavaged + " dependencies.");
+        LOGGER.info("{} {} mods, {} dependencies.", CHOICE_OF_WORD, modsRavaged, dependenciesRavaged);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         if (Properties.of("print-json", false)) {
-            Logger.info(gson.toJson(object));
+            LOGGER.info(gson.toJson(object));
         }
         if (Properties.of("write-json", true)) {
             try (BufferedWriter writer = Files.newBufferedWriter(overridesFile.toPath(), StandardCharsets.UTF_8)) {
@@ -134,12 +132,12 @@ public class Faux {
                 System.out.println("JSON file written successfully.");
             }
             catch (IOException e) {
-                Logger.info("Encountered error while writing overrides!");
+                LOGGER.info("Encountered error while writing overrides!");
                 e.printStackTrace();
             }
         }
         else {
-            Logger.info("Property faux.write-json is false, not writing overrides!");
+            LOGGER.info("Property faux.write-json is false, not writing overrides!");
         }
     }
 }
