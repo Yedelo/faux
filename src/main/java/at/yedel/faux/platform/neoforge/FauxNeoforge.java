@@ -3,12 +3,17 @@ package at.yedel.faux.platform.neoforge;
 
 
 import at.yedel.faux.utils.Constants;
+import at.yedel.faux.utils.FileUtils;
+import at.yedel.faux.utils.Properties;
 import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.toml.TomlFormat;
+import com.electronwill.nightconfig.toml.TomlWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -26,7 +31,6 @@ public class FauxNeoforge {
 
     public void initialize() {
         Map<String, List<String>> relationMap = collect();
-        LOGGER.info(relationMap.toString());
         write(relationMap);
     }
 
@@ -39,6 +43,10 @@ public class FauxNeoforge {
                 continue;
             }
             Config nmt = getNmtFromModFile(modFile);
+            if (nmt == null) {
+                LOGGER.warn("File {} has no neoforge.mods.toml, skipping!", modFile);
+                continue;
+            }
             List<Config> mods = nmt.get("mods");
             Config mod = mods.getFirst();
             String id = mod.get("modId");
@@ -54,69 +62,52 @@ public class FauxNeoforge {
     }
 
     private void write(Map<String, List<String>> relationMap) {
-//        int modsRavaged = 0;
-//        int dependenciesRavaged = 0;
-//
-//        File configDir = FileUtils.provideConfigDir();
-//        File overridesFile = new File(configDir, "fabric_loader_dependencies.json");
-//        JsonObject object = null;
-//        if (!overridesFile.exists()) {
-//            LOGGER.info("Creating new fabric_loader_dependencies.json");
-//            object = new JsonObject();
-//        }
-//        else {
-//            try (FileReader reader = new FileReader(overridesFile)) {
-//                object = JsonParser.parseReader(reader).getAsJsonObject();
-//            }
-//            catch (IOException e) {
-//                LOGGER.error("Error reading overrides file!", e);
-//            }
-//            LOGGER.info("Found fabric_loader_dependencies.json, editing existing one");
-//        }
-//        if (!object.has("version")) {
-//            object.add("version", new JsonPrimitive(1));
-//        }
-//        if (!object.has("overrides")) {
-//            object.add("overrides", new JsonObject());
-//        }
-//        JsonObject overrides = object.getAsJsonObject("overrides");
-//        for (RelationMap relationMap: relationMaps) {
-//            String id = relationMap.id;
-//            JsonObject objectForMod = new JsonObject();
-//            if (object.has(id)) {
-//                continue;
-//            }
-//            for (String relation: relationMap.relations.keySet()) {
-//                ArrayList<String> mods = relationMap.relations.get(relation);
-//                if (mods.isEmpty()) {
-//                    continue;
-//                }
-//                JsonObject objectForRelation = new JsonObject();
-//                for (String mod: mods) {
-//                    objectForRelation.add(mod, new JsonPrimitive("IGNORED"));
-//                    dependenciesRavaged ++;
-//                }
-//                objectForMod.add("-" + relation, objectForRelation);
-//            }
-//            overrides.add(id, objectForMod);
-//            modsRavaged ++;
-//        }
-//        LOGGER.info("{} {} mods and {} dependencies", Constants.CHOICE_OF_WORD, modsRavaged, dependenciesRavaged);
-//        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-//        if (Properties.of("print-file", false)) {
-//            LOGGER.info(gson.toJson(object));
-//        }
-//        if (Properties.of("write-file", true)) {
-//            try (BufferedWriter writer = Files.newBufferedWriter(overridesFile.toPath(), StandardCharsets.UTF_8)) {
-//                gson.toJson(object, writer);
-//            }
-//            catch (IOException e) {
-//                LOGGER.error("Encountered error while writing overrides!", e);
-//            }
-//        }
-//        else {
-//            LOGGER.warn("Property faux.write-file is false, not writing overrides!");
-//        }
+        int modsRavaged = 0;
+        int dependenciesRavaged = 0;
+
+        File configDir = FileUtils.provideConfigDir();
+        File configFile = new File(configDir, "fml.toml");
+        Config config = null;
+        if (!configFile.exists()) {
+            LOGGER.info("Creating new fml.toml");
+            config = TomlFormat.newConfig();
+        }
+        else {
+            try (FileReader reader = new FileReader(configFile)) {
+                config = TomlFormat.instance().createParser().parse(reader);
+            }
+            catch (IOException e) {
+                LOGGER.error("Error reading config file!", e);
+            }
+            LOGGER.info("Found fml.toml, editing existing one");
+        }
+        if (!config.contains("dependencyOverrides")) {
+            config.set("dependencyOverrides", TomlFormat.newConfig());
+        }
+        Config dependencyOverrides = config.get("dependencyOverrides");
+        for (Map.Entry<String, List<String>> entry: relationMap.entrySet()) {
+            List<String> ids = entry.getValue();
+            dependencyOverrides.set(entry.getKey(), ids.stream().map(id -> "-" + id).toList());
+            modsRavaged ++;
+            dependenciesRavaged += ids.size();
+        }
+
+        LOGGER.info("{} {} mods and {} dependencies", Constants.CHOICE_OF_WORD, modsRavaged, dependenciesRavaged);
+        TomlWriter tomlWriter = new TomlWriter();
+        if (Properties.of("print-file", false)) {
+            LOGGER.info(tomlWriter.writeToString(dependencyOverrides));
+        }
+        if (Properties.of("write-file", true)) {
+            try (BufferedWriter writer = Files.newBufferedWriter(configFile.toPath(), StandardCharsets.UTF_8)) {
+                tomlWriter.write(config, writer);
+            }
+            catch (IOException e) {
+                LOGGER.error("Encountered error while writing overrides!", e);
+            }
+        }
+        else {
+            LOGGER.warn("Property faux.write-file is false, not writing overrides!");
+        }
     }
 
     // nmt
