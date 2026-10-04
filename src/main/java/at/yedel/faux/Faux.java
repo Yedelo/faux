@@ -11,6 +11,7 @@ import com.google.gson.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -159,8 +160,8 @@ public class Faux {
         }
     }
 
-    //@TODO support mods from java argument -Dfabric.addMods
     private List<File> getModFiles() {
+        List<File> modFiles = new ArrayList<>();
         String customModsFolder = System.getProperty("fabric.modsFolder");
         File modsDir = null;
         if (customModsFolder != null) {
@@ -169,9 +170,32 @@ public class Faux {
         else {
             modsDir = new File(Constants.workDir, "mods");
         }
-        if (!modsDir.exists()) {
-            modsDir.mkdir();
+        if (modsDir.exists()) {
+            modFiles.addAll(Arrays.asList(modsDir.listFiles()));
         }
-        return Arrays.asList(modsDir.listFiles());
+        String customMods = System.getProperty("fabric.addMods");
+        if (customMods != null) {
+            if (customMods.startsWith("@")) {
+                Path additionalModsFile = Path.of(customMods.substring(1));
+                try {
+                    String additionalMods = Files.readString(additionalModsFile);
+                    String[] additionalModLines = additionalMods.split("\n");
+                    for (String additionalModLine: additionalModLines) {
+                        Logger.info("Attempting creation of file " + additionalModLine);
+                        modFiles.add(new File(additionalModLine));
+                    }
+                }
+                catch (IOException e) {
+                    // like bro
+                }
+            }
+            else {
+                String[] additionalMods = customMods.split(File.pathSeparator);
+                for (String additionalMod: additionalMods) {
+                    modFiles.add(new File(additionalMod));
+                }
+            }
+        }
+        return modFiles;
     }
 }
