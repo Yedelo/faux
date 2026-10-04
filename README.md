@@ -8,7 +8,7 @@
 
 ![modrinth latest version](https://img.shields.io/modrinth/v/lDJcSaOT?label=modrinth)
 
-This mod (java agent) mutes Fabric Loader dependencies by scanning the mods folder, looking for dependency relations, and generating an inverse in `config/fabric-loader-dependencies.json`.
+This mod (java agent) mutes Fabric/NeoForge dependencies by scanning the mods folder, looking for dependency relations, and generating an inverse dependency override file.
 This does not create any compatibility with any mods beyond removing the initial loader crash.
 
 ## Usages
@@ -20,8 +20,8 @@ This does not create any compatibility with any mods beyond removing the initial
 
 ## Installation
 
-To use this mod properly, install it as a **Java Agent** on a Fabric instance.
-There is an entrypoint for using it as a regular mod, however it is not recommended and may not work for normal use cases.
+To use this mod properly, install it as a **Java Agent** on a Fabric/NeoForge instance.
+There is an entrypoint for using it as a regular mod on Fabric, however it is not recommended and may not work for normal use cases.
 
 ## Unsupported
 
@@ -31,5 +31,6 @@ There is an entrypoint for using it as a regular mod, however it is not recommen
 ## Dependencies
 
 Ironic...  
-[Fabric Loader](https://github.com/FabricMC/fabric-loader/) >= 0.11.1 (adds dependency overrides)
+[Fabric Loader](https://github.com/FabricMC/fabric-loader/) 0.11.1+ (adds dependency overrides) -> any Minecraft version  
+[FancyModLoader](https://github.com/neoforged/FancyModLoader/tree/main) 6.0+ (adds dependency overrides) -> Minecraft 1.21.1+
 
