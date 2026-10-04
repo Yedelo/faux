@@ -4,10 +4,13 @@ package at.yedel.faux;
 
 import at.yedel.faux.utils.Constants;
 import at.yedel.faux.utils.Logger;
+import at.yedel.faux.utils.Properties;
 import at.yedel.faux.utils.RelationMap;
 import com.google.gson.*;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -68,7 +71,6 @@ public class Faux {
 
     private void write(ArrayList<RelationMap> relationMaps) {
         int modsRavaged = 0;
-        int relationsRavaged = 0;
         int dependenciesRavaged = 0;
 
         File configDir = new File(Constants.workDir, "config");
@@ -113,12 +115,28 @@ public class Faux {
                     dependenciesRavaged ++;
                 }
                 objectForMod.add("-" + relation, objectForRelation);
-                relationsRavaged ++;
             }
             overrides.add(id, objectForMod);
             modsRavaged ++;
         }
-        Logger.info(new GsonBuilder().setPrettyPrinting().create().toJson(object));
+        Logger.info("Ravaged " + modsRavaged + " mods, " + dependenciesRavaged + " dependencies.");
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        if (Properties.of("print-json", false)) {
+            Logger.info(gson.toJson(overrides));
+        }
+        if (Properties.of("write-json", true)) {
+            try (BufferedWriter writer = Files.newBufferedWriter(overridesFile.toPath(), StandardCharsets.UTF_8)) {
+                gson.toJson(overrides, writer);
+                System.out.println("JSON file written successfully.");
+            }
+            catch (IOException e) {
+                Logger.info("Encountered error while writing overrides!");
+                e.printStackTrace();
+            }
+        }
+        else {
+            Logger.info("Property faux.write-json is false, not writing overrides!");
+        }
     }
 
     private JsonObject getFmjFromModFile(File modFile) {
