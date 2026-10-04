@@ -51,6 +51,7 @@ public class Faux {
         ArrayList<RelationMap> relationMaps = new ArrayList<>();
         List<File> modFiles = ModFiles.getModFiles();
         for (File modFile: modFiles) {
+            // stuff like prism's .index
             if (modFile.isDirectory()) {
                 continue;
             }
