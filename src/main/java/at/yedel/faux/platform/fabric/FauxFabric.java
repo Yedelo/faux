@@ -1,3 +1,4 @@
+//? if fabric {
 package at.yedel.faux.platform.fabric;
 
 
@@ -189,3 +190,4 @@ public class FauxFabric {
         return modFiles;
     }
 }
+//?}
