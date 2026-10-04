@@ -19,6 +19,11 @@ This does not create any compatibility with any mods beyond removing the initial
 - Testing mods on different Minecraft versions (e.g. 26.2 -> 26.3)
 - Removing hostile `breaks` relations (e.g. SkyHanni breaking mod hiders)
 
+## Installation
+
+To use this mod properly, install it as a **Java Agent** on a Fabric instance.
+There is an entrypoint for using it as a regular mod, however it is not recommended and may not work for normal use cases.
+
 ## Unsupported
 
 - Dependencies from Jar-in-Jar
