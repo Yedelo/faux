@@ -29,6 +29,7 @@ public class Faux {
     }
 
     private static final String[] RELATION_KEYS = new String[] {"depends", "recommends", "suggests", "breaks", "conflicts"};
+    private static final String CHOICE_OF_WORD = "Muted";
     private boolean initialized;
 
     public void initialize() {
@@ -122,7 +123,7 @@ public class Faux {
             overrides.add(id, objectForMod);
             modsRavaged ++;
         }
-        Logger.info("Ravaged " + modsRavaged + " mods, " + dependenciesRavaged + " dependencies.");
+        Logger.info(CHOICE_OF_WORD + " " + modsRavaged + " mods, " + dependenciesRavaged + " dependencies.");
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         if (Properties.of("print-json", false)) {
             Logger.info(gson.toJson(object));
