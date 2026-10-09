@@ -121,7 +121,8 @@ public class FauxFabric {
     }
 
     private static RelationMap getRelationMapFromModFile(File modFile) {
-        JsonObject fmj = getFmjFromModFile(modFile);
+        JarFile modJar = FileUtils.getJarFile(modFile);
+        JsonObject fmj = getFmj(modJar);
         if (fmj == null) return null;
         if (fmj.has("jars")) {
             Logger.info("Mod file {} has jars {}", modFile, fmj.get("jars"));
@@ -139,25 +140,6 @@ public class FauxFabric {
             }
         }
         return relationMap;
-    }
-
-    public static JsonObject getFmjFromModFile(File modFile) {
-        try (JarFile modJar = new JarFile(modFile)) {
-            JarEntry possibleModInfo = modJar.getJarEntry("fabric.mod.json");
-            if (possibleModInfo == null) {
-                return null;
-            }
-            try (
-                InputStream modStream = modJar.getInputStream(possibleModInfo);
-                InputStreamReader reader = new InputStreamReader(modStream)
-            ) {
-                JsonObject modObject = new JsonParser().parse(reader).getAsJsonObject();
-                return modObject;
-            }
-        }
-        catch (IOException e) {
-            return null;
-        }
     }
 
     public static List<File> getModFiles() {
@@ -196,6 +178,22 @@ public class FauxFabric {
             }
         }
         return modFiles;
+    }
+
+    public static JsonObject getFmj(JarFile modJar) {
+        JarEntry possibleModInfo = modJar.getJarEntry("fabric.mod.json");
+        if (possibleModInfo == null) {
+            return null;
+        }
+        try (
+            InputStream modStream = modJar.getInputStream(possibleModInfo);
+            InputStreamReader reader = new InputStreamReader(modStream)
+        ) {
+            return new JsonParser().parse(reader).getAsJsonObject();
+        }
+        catch (IOException e) {
+            return null;
+        }
     }
 }
 //?}
