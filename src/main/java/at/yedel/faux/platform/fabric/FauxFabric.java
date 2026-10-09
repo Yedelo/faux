@@ -45,20 +45,10 @@ public class FauxFabric {
             if (modFile.isDirectory()) {
                 continue;
             }
-            JsonObject fmj = getFmjFromModFile(modFile);
-            String id = fmj.get("id").getAsString();
-            RelationMap relationMap = new RelationMap(id);
-            for (String relationKey: RELATION_KEYS) {
-                relationMap.relations.put(relationKey, new ArrayList<>());
-                JsonObject relationships = fmj.getAsJsonObject(relationKey);
-                if (relationships == null) {
-                    continue;
-                }
-                for (String mod: relationships.asMap().keySet()) {
-                    relationMap.relations.get(relationKey).add(mod);
-                }
+            RelationMap relationMap = getRelationMapFromModFile(modFile);
+            if (relationMap != null) {
+                relationMaps.add(relationMap);
             }
-            relationMaps.add(relationMap);
         }
         return relationMaps;
     }
@@ -128,6 +118,24 @@ public class FauxFabric {
         else {
             Logger.warn("Property faux.write-file is false, not writing overrides!");
         }
+    }
+
+    private static RelationMap getRelationMapFromModFile(File modFile) {
+        JsonObject fmj = getFmjFromModFile(modFile);
+        if (fmj == null) return null;
+        String id = fmj.get("id").getAsString();
+        RelationMap relationMap = new RelationMap(id);
+        for (String relationKey: RELATION_KEYS) {
+            relationMap.relations.put(relationKey, new ArrayList<>());
+            JsonObject relationships = fmj.getAsJsonObject(relationKey);
+            if (relationships == null) {
+                continue;
+            }
+            for (String mod: relationships.asMap().keySet()) {
+                relationMap.relations.get(relationKey).add(mod);
+            }
+        }
+        return relationMap;
     }
 
     public static JsonObject getFmjFromModFile(File modFile) {
