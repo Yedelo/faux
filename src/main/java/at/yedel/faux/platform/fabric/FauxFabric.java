@@ -124,9 +124,6 @@ public class FauxFabric {
         JarFile modJar = FileUtils.getJarFile(modFile);
         JsonObject fmj = getFmj(modJar);
         if (fmj == null) return null;
-        if (fmj.has("jars")) {
-            Logger.info("Mod file {} has jars {}", modFile, fmj.get("jars"));
-        }
         String id = fmj.get("id").getAsString();
         RelationMap relationMap = new RelationMap(id);
         for (String relationKey: RELATION_KEYS) {
