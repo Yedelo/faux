@@ -13,10 +13,10 @@ This does not create any compatibility with any mods beyond removing the initial
 
 ## Usages
 
-- Swapping mods with the same effective functionality (e.g. `legacy-lwjgl3` vs `pylon` on Ornithe)
-- Dealing with changing mod id's (e.g. `lumen` -> `lenis` -> `pylon` on Ornithe (rdh))
 - Testing mods on different Minecraft versions (e.g. 26.2 -> 26.3)
-- Removing hostile `breaks` relations (e.g. SkyHanni breaking mod hiders)
+- Using mods with stubborn dependencies (e.g. replacing a certain Fabric API version)
+- Swapping/aliasing mods with the same effective functionality (e.g. `legacy-lwjgl3` vs `pylon`)
+- Dealing with changing mod id's (e.g. `lumen` -> `lenis` -> `pylon` [codih])
 
 ## Installation
 
